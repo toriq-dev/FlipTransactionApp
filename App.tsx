@@ -18,7 +18,7 @@ const App = () => {
         <Stack.Screen
           name="TransactionList"
           component={TransactionList}
-          options={{ title: 'Transaction List' }}
+          options={{ title: 'Flip Transaction List' }}
         />
         <Stack.Screen
           name="TransactionDetail"
