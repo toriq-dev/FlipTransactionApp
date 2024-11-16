@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, StyleSheet } from 'react-native';
 import { useFetchTransactions } from '../hooks/useFetchTransactions';
 import { TransactionItem } from '../components/TransactionItem';
 import { SearchBar } from '../components/SearchBar';
@@ -61,7 +61,7 @@ export const TransactionList = () => {
   };
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
+    <View style={styles.container}>
       <SearchBar
         value={searchText}
         onChangeText={handleSearch}
@@ -88,3 +88,11 @@ export const TransactionList = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+    container: {
+      padding: 16,
+      flex: 1,
+    },
+});
+
