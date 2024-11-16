@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '../App';
+import { RootStackParamList } from '../navigation/RootStack';
+import { formatDate } from '../utils/formatDate';
 
 type TransactionDetailRouteProp = RouteProp<RootStackParamList, 'TransactionDetail'>;
 
@@ -45,7 +46,7 @@ export const TransactionDetail = () => {
 
         <View style={styles.row}>
           <Text style={styles.label}>WAKTU DIBUAT</Text>
-          <Text style={styles.value}>{transaction.created_at}</Text>
+          <Text style={styles.value}>{formatDate(transaction.created_at)}</Text>
         </View>
       </View>
     </View>

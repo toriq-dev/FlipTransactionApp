@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import { useFetchTransactions } from '../hooks/useFetchTransactions';
-import { TransactionItem } from '../components/TransactionItem';
+import { MemoizedTransactionItem } from '../components/TransactionItem';
 import { SearchBar } from '../components/SearchBar';
 import { SortModal } from '../components/SortModal';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { RootStackParamList } from '../App';
+import { RootStackParamList } from '../navigation/RootStack';
+import { filterTransactions } from '../usecases/filterTransactions';
+import { sortTransactions } from '../usecases/sortTransactions';
 
 export const TransactionList = () => {
   const { transactions } = useFetchTransactions();
@@ -21,40 +23,12 @@ export const TransactionList = () => {
 
   const handleSearch = (text: string) => {
     setSearchText(text);
-    const filtered = transactions.filter((transaction) => {
-      const nameMatch = transaction.beneficiary_name
-        .toLowerCase()
-        .includes(text.toLowerCase());
-      const senderBankMatch = transaction.sender_bank
-        .toLowerCase()
-        .includes(text.toLowerCase());
-      const beneficiaryBankMatch = transaction.beneficiary_bank
-        .toLowerCase()
-        .includes(text.toLowerCase());
-      const amountMatch = transaction.amount.toString().includes(text);
-
-      return nameMatch || senderBankMatch || beneficiaryBankMatch || amountMatch;
-    });
+    const filtered = filterTransactions(transactions, text);
     setFilteredTransactions(filtered);
   };
 
   const handleSort = (type: string, label: string) => {
-    const sorted = [...filteredTransactions].sort((a, b) => {
-      if (type === 'name-asc') {
-        return a.beneficiary_name.localeCompare(b.beneficiary_name);
-      }
-      if (type === 'name-desc') {
-        return b.beneficiary_name.localeCompare(a.beneficiary_name);
-      }
-      if (type === 'date-newest') {
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      }
-      if (type === 'date-oldest') {
-        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-      }
-      return 0;
-    });
-
+    const sorted = sortTransactions(filteredTransactions, type);
     setFilteredTransactions(sorted);
     setSelectedSort(label);
     setSortModalVisible(false);
@@ -78,7 +52,7 @@ export const TransactionList = () => {
       <FlatList
         data={filteredTransactions}
         renderItem={({ item }) => (
-          <TransactionItem
+          <MemoizedTransactionItem
             transaction={item}
             onPress={() => navigation.navigate('TransactionDetail', { transaction: item })}
           />

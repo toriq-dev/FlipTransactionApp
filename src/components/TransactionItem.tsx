@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Transaction } from '../hooks/useFetchTransactions';
+import { formatDate } from '../utils/formatDate';
+import { Transaction } from '../types/transaction';
 
 interface TransactionItemProps {
   transaction: Transaction;
@@ -8,12 +9,10 @@ interface TransactionItemProps {
 }
 
 export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onPress }) => {
-  // Determine the color based on the status
   const statusColor = transaction.status === 'SUCCESS' ? '#4CAF50' : '#FFC107';
 
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
-      {/* Left status indicator */}
       <View style={[styles.statusIndicator, { backgroundColor: statusColor }]} />
       <View style={styles.bankInfo}>
         <Text style={styles.bankName}>
@@ -33,14 +32,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, o
   );
 };
 
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
-};
+export const MemoizedTransactionItem = React.memo(TransactionItem);
 
 const styles = StyleSheet.create({
   container: {
@@ -50,17 +42,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 8,
     paddingRight: 8,
-    overflow: 'hidden', // Ensures no overflow
+    overflow: 'hidden',
   },
   statusIndicator: {
-    width: 8, // Width of the indicator
-    height: '100%', // Full height of the container
+    width: 8,
+    height: '100%',
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
   },
   bankInfo: {
     flex: 1,
-    padding: 8, // Adds padding between the indicator and the text
+    padding: 8,
   },
   bankName: {
     fontWeight: 'bold',
