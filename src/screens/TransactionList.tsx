@@ -65,7 +65,7 @@ export const TransactionList = () => {
 
 const styles = StyleSheet.create({
     container: {
-      padding: 16,
+      padding: 12,
       flex: 1,
     },
 });

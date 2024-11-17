@@ -1,21 +1,44 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useCallback, useLayoutEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/RootStack';
 import { formatDate } from '../utils/formatDate';
+import Clipboard from '@react-native-clipboard/clipboard';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type TransactionDetailRouteProp = RouteProp<RootStackParamList, 'TransactionDetail'>;
 
 export const TransactionDetail = () => {
-  const route = useRoute<TransactionDetailRouteProp>();
-  const { transaction } = route.params;
+  const { params: { transaction } } = useRoute<TransactionDetailRouteProp>();
   const navigation = useNavigation();
+
+  const handleCopyToClipboard = () => {
+    Clipboard.setString(transaction.id);
+    Alert.alert('Berhasil', 'ID Transaksi telah disalin ke clipboard.');
+  };
+
+  const headerLeft = useCallback(() => (
+    <TouchableOpacity style={styles.customBackButton} onPress={() => navigation.goBack()}>
+      <Icon name="arrow-back" size={20} color="#fc614a" />
+    </TouchableOpacity>
+  ), [navigation]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft,
+    });
+  }, [navigation, headerLeft]);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.transactionId}>ID TRANSAKSI: #{transaction.id}</Text>
+        <TouchableOpacity onPress={handleCopyToClipboard}>
+          <Icon name="copy-outline" size={20} color="#fc614a" />
+        </TouchableOpacity>
       </View>
+
+      <View style={styles.divider} />
 
       <View style={styles.detailContainer}>
         <Text style={styles.sectionTitle}>DETAIL TRANSAKSI</Text>
@@ -24,29 +47,40 @@ export const TransactionDetail = () => {
         </TouchableOpacity>
       </View>
 
+      <View style={styles.divider} />
+
       <View style={styles.content}>
-        <Text style={styles.bankText}>{transaction.sender_bank.toUpperCase()} ➔ {transaction.beneficiary_bank.toUpperCase()}</Text>
-        <Text style={styles.beneficiaryName}>- {transaction.beneficiary_name}</Text>
-        <Text style={styles.accountNumber}>{transaction.account_number}</Text>
+        <Text style={styles.bankText}>
+          {transaction.sender_bank.toUpperCase()} ➔ {transaction.beneficiary_bank.toUpperCase()}
+        </Text>
 
         <View style={styles.row}>
-          <Text style={styles.label}>NOMINAL</Text>
-          <Text style={styles.value}>Rp{transaction.amount.toLocaleString()}</Text>
+          <View style={styles.rowContent}>
+            <Text style={styles.label}>- {transaction.beneficiary_name}</Text>
+            <Text style={styles.value}>{transaction.account_number}</Text>
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={styles.label}>NOMINAL</Text>
+            <Text style={styles.value}>Rp{transaction.amount.toLocaleString()}</Text>
+          </View>
         </View>
 
         <View style={styles.row}>
-          <Text style={styles.label}>BERITA TRANSFER</Text>
-          <Text style={styles.value}>{transaction.remark}</Text>
+          <View style={styles.rowContent}>
+            <Text style={styles.label}>BERITA TRANSFER</Text>
+            <Text style={styles.value}>{transaction.remark}</Text>
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={styles.label}>KODE UNIK</Text>
+            <Text style={styles.value}>{transaction.unique_code}</Text>
+          </View>
         </View>
 
         <View style={styles.row}>
-          <Text style={styles.label}>KODE UNIK</Text>
-          <Text style={styles.value}>{transaction.unique_code}</Text>
-        </View>
-
-        <View style={styles.row}>
-          <Text style={styles.label}>WAKTU DIBUAT</Text>
-          <Text style={styles.value}>{formatDate(transaction.created_at)}</Text>
+          <View style={styles.rowContent}>
+            <Text style={styles.label}>WAKTU DIBUAT</Text>
+            <Text style={styles.value}>{formatDate(transaction.created_at)}</Text>
+          </View>
         </View>
       </View>
     </View>
@@ -55,9 +89,12 @@ export const TransactionDetail = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 12,
     backgroundColor: '#FFF',
     flex: 1,
+  },
+  customBackButton: {
+    marginLeft: 10,
   },
   header: {
     flexDirection: 'row',
@@ -79,8 +116,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   closeButton: {
-    color: 'orange',
-    fontSize: 12,
+    color: '#fc614a',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
   content: {
     paddingVertical: 8,
@@ -90,18 +128,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 4,
   },
-  beneficiaryName: {
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  accountNumber: {
-    color: '#666',
-    marginBottom: 16,
-  },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: 8,
+    marginVertical: 16,
+  },
+  rowContent: {
+    flex: 1,
+    justifyContent: 'space-between',
   },
   label: {
     fontWeight: 'bold',
@@ -110,4 +144,11 @@ const styles = StyleSheet.create({
   value: {
     color: '#333',
   },
+  divider: {
+    height: 1,
+    backgroundColor: '#ddd',
+    marginVertical: 8,
+  },
 });
+
+export default TransactionDetail;

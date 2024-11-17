@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet, Button } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native';
 
 interface SortModalProps {
   visible: boolean;
@@ -7,30 +7,24 @@ interface SortModalProps {
   onSort: (type: string, label: string) => void;
 }
 
+const SORT_OPTIONS = [
+  { type: 'name-asc', label: 'Nama A-Z' },
+  { type: 'name-desc', label: 'Nama Z-A' },
+  { type: 'date-newest', label: 'Tanggal Terbaru' },
+  { type: 'date-oldest', label: 'Tanggal Terlama' },
+];
+
 export const SortModal: React.FC<SortModalProps> = ({ visible, onClose, onSort }) => {
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={styles.container}>
           <Text style={styles.title}>Urutkan</Text>
-          <TouchableOpacity onPress={() => onSort('name-asc', 'Nama A-Z')}>
-            <Text style={styles.option}>Nama A-Z</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => onSort('name-desc', 'Nama Z-A')}>
-            <Text style={styles.option}>Nama Z-A</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => onSort('date-newest', 'Tanggal Terbaru')}>
-            <Text style={styles.option}>Tanggal Terbaru</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => onSort('date-oldest', 'Tanggal Terlama')}>
-            <Text style={styles.option}>Tanggal Terlama</Text>
-          </TouchableOpacity>
-          <Button title="Tutup" onPress={onClose} />
+          {SORT_OPTIONS.map((option) => (
+            <TouchableOpacity key={option.type} onPress={() => onSort(option.type, option.label)}>
+              <Text style={styles.option}>{option.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
     </Modal>
@@ -59,3 +53,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+
+export default SortModal;

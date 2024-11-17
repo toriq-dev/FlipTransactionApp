@@ -9,7 +9,7 @@ interface TransactionItemProps {
 }
 
 export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onPress }) => {
-  const statusColor = transaction.status === 'SUCCESS' ? '#4CAF50' : '#FFC107';
+  const statusColor = transaction.status === 'SUCCESS' ? '#59b385' : '#fc614a';
 
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
@@ -24,7 +24,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, o
         </Text>
       </View>
       <View style={transaction.status === 'SUCCESS' ? styles.success : styles.pending}>
-        <Text style={styles.statusText}>
+        <Text style={transaction.status === 'SUCCESS' ? styles.statusText : styles.statusTextPending}>
           {transaction.status === 'SUCCESS' ? 'Berhasil' : 'Pengecekan'}
         </Text>
       </View>
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     color: '#777',
   },
   success: {
-    backgroundColor: 'green',
+    backgroundColor: '#59b385',
     height: 20,
     paddingHorizontal: 8,
     borderRadius: 8,
@@ -72,15 +72,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   pending: {
-    backgroundColor: 'orange',
+    backgroundColor: '#fff',
     height: 20,
     paddingHorizontal: 8,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fc614a',
     justifyContent: 'center',
     alignItems: 'center',
   },
   statusText: {
     color: '#FFF',
+    fontSize: 12,
+  },
+  statusTextPending: {
+    color: '#000',
     fontSize: 12,
   },
 });
